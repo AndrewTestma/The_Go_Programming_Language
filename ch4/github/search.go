@@ -10,24 +10,24 @@ import (
 	"strings"
 )
 
-func SearchIssues (terms []string)(*IssuesSearchResult,error){
-	q := url.QueryEscape(strings.Join(terms," "))
-	resp,err := http.Get(IssuesURL + "?q=" + q)
-	if err != nil{
-		return nil,err
+func SearchIssues(terms []string) (*IssuesSearchResult, error) {
+	q := url.QueryEscape(strings.Join(terms, " "))
+	resp, err := http.Get(IssuesURL + "?q=" + q)
+	if err != nil {
+		return nil, err
 	}
-	if resp.StatusCode != http.StatusOK{
+	if resp.StatusCode != http.StatusOK {
 		_ = resp.Body.Close()
-		return nil,fmt.Errorf("search query failed: %s",resp.Status)
+		return nil, fmt.Errorf("search query failed: %s", resp.Status)
 	}
 
 	var result IssuesSearchResult
-	if err := json.NewDecoder(resp.Body).Decode(&result);err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		_ = resp.Body.Close()
-		return nil,err
+		return nil, err
 	}
 	_ = resp.Body.Close()
-	return &result,nil
+	return &result, nil
 }
 
 // remember to close the response body.
@@ -103,6 +103,35 @@ func EditIssue(owner, repo, number string, fields map[string]string) (*Issue, er
 	return &issue, nil
 }
 
-func CreateIssue(owner,repo,number string,fields map[string]string)(*Issue,error){
-
+func CreateIssue(owner, repo, title, body string) (*Issue, error) {
+	buf := &bytes.Buffer{}
+	encoder := json.NewEncoder(buf)
+	issue_content := map[string]string{
+		"title": title,
+		"body":  body,
+	}
+	err := encoder.Encode(issue_content)
+	if err != nil {
+		return nil, err
+	}
+	client := &http.Client{}
+	url := strings.Join([]string{APIURL, "repos", owner, repo, "issues"}, "/")
+	req, err := http.NewRequest("POST", url, buf)
+	req.SetBasicAuth(os.Getenv("GITHUB_USER"), os.Getenv("GITHUB_PASS"))
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusCreated {
+		return nil, fmt.Errorf("failed to create issue: %s", resp.Status)
+	}
+	var issue Issue
+	if err = json.NewDecoder(resp.Body).Decode(&issue); err != nil {
+		return nil, err
+	}
+	return &issue, nil
 }
