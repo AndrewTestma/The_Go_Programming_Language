@@ -1,4 +1,4 @@
-package main
+package ex5_18
 
 import (
 	"io"
