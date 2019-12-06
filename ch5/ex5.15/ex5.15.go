@@ -27,7 +27,7 @@ func min(nums ...int) int {
 			m = num
 		}
 	}
-	return 0
+	return m
 }
 
 func max2(first int, nums ...int) int {
@@ -47,7 +47,7 @@ func min2(first int, nums ...int) int {
 			m = num
 		}
 	}
-	return 0
+	return m
 }
 
 func main() {

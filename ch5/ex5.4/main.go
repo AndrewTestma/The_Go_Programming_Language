@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+//练习 5.4：扩展vist函数，使其能够处理其他类型的结点，如images、scripts和style sheets。
 func visit(links []string, n *html.Node) []string {
 	if n.Type == html.ElementNode && n.Data == "a" {
 		for _, a := range n.Attr {

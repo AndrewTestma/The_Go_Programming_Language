@@ -7,6 +7,7 @@ import (
 	"path"
 )
 
+//练习5.18：不修改fetch的行为，重写fetch函数，要求使用defer机制关闭文件。
 func fetch(url string) (filename string, n int64, err error) {
 	resp, err := http.Get(url)
 	if err != nil {
