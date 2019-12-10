@@ -20,7 +20,7 @@ func TestNewReader(t *testing.T) {
 		t.Logf(`"%s" != "%s"`, b.String(), s)
 	}
 }
-func TestNewReaderWrithHTML(t *testing.T) {
+func TestNewReaderWithHTML(t *testing.T) {
 	s := "<html><body><p>hi</p></body></html>"
 	_, err := html.Parse(NewReader(s))
 	if err != nil {
